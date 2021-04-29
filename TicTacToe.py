@@ -5,14 +5,14 @@ from tkinter import messagebox
 
 class Game:
     """
-    TODO
+    Class used to create the game
     """
 
     def __init__(self, height, width):
         """
-        TODO
-        :param height: TODO
-        :param width: TODO
+        Game initialization
+        :param height: number of lines
+        :param width: number of columns
         """
 
         self.name = "Tic tac toe"
@@ -37,22 +37,34 @@ class Game:
         self.botidiot = BotIdiot(self.grid.cells)
 
     def restart(self):
+        """
+        Method which restart the game
+        :return:
+        """
         self.count = 0
         self.clicked = True
         self.grid.create_cells(lambda e: self.check_button(e, self.choice))
         self.grid.display_grid()
 
     def choice_player_vs_player(self):
+        """
+        Method used to update the value of choice
+        :return:
+        """
         self.choice = 1
 
     def choice_player_vs_bot(self):
+        """
+        Method used to update the value of choice
+        :return:
+        """
         self.choice = 2
 
     def player_vs_bot(self, x, y):
         """
-        TODO
-        :param x: TODO
-        :param y: TODO
+        Method that allows a player to play against a bot
+        :param x: line number
+        :param y: column number
         :return:
         """
 
@@ -68,9 +80,9 @@ class Game:
 
     def player_vs_player(self, x, y):
         """
-        TODO
-        :param x: TODO
-        :param y: TODO
+        Method which allows a player to be played against another player
+        :param x: line number
+        :param y: column number
         :return:
         """
 
@@ -84,9 +96,10 @@ class Game:
 
     def check_button(self, event: tkinter.Event, choice):
         """
-        TODO
-        :param choice: TODO
-        :param event: TODO
+        Method which makes it possible to check that the pressed button is the correct one and that the button is
+        well pressable
+        :param choice: parameter that lets you know if you throw against a player or against a bot
+        :param event: parameter which takes in parameter the pressed button
         :return:
         """
         # print(dir(event))
@@ -106,8 +119,8 @@ class Game:
     def button_click_player1(self, x, y):
         """
         method print to the screen the character
-        :param y: TODO
-        :param x: TODO
+        :param y: column number
+        :param x: line number
         :return:
         """
 
@@ -119,8 +132,8 @@ class Game:
     def button_click_player2(self, x, y):
         """
         method print to the screen the character
-        :param y: TODO
-        :param x: TODO
+        :param y: column number
+        :param x: line number
         :return:
         """
 
@@ -132,12 +145,10 @@ class Game:
     def button_click_bot(self, btnx, btny):
         """
         method print to the screen the character
-        :param btny: TODO
-        :param btnx: TODO
+        :param btny: line number
+        :param btnx: column number
         :return:
         """
-
-        # TODO : TypeError: can only concatenate str (not "int") to str
 
         self.grid.cells[btnx][btny]["text"] = 'X'
         self.clicked = True  # Change the character for the next move
@@ -158,8 +169,8 @@ class Game:
 
     def check_row(self, player):
         """
-        TODO
-        :param player: TODO
+        method which checks for each row if the player wins
+        :param player: Current player's pawn
         :return:
         """
 
@@ -173,8 +184,8 @@ class Game:
 
     def check_column(self, player):
         """
-        TODO
-        :param player: TODO
+        method which checks for each column if the player wins
+        :param player: Current player's pawn
         :return:
         """
 
@@ -186,8 +197,8 @@ class Game:
 
     def check_diagonals(self, player):
         """
-        TODO
-        :param player: TODO
+        method which checks for each diagonal if the player wins
+        :param player: Current player's pawn
         :return:
         """
 
@@ -201,7 +212,7 @@ class Game:
 
     def check_draw(self):
         """
-        TODO
+        method that checks if there is an equality
         :return:
         """
 
@@ -211,16 +222,13 @@ class Game:
 
 
 class Grid:
-    """
-    TODO
-    """
 
     def __init__(self, window, height, width):
         """
-        TODO
-        :param window: TODO
-        :param height: TODO
-        :param width: TODO
+        Initializes the button grid
+        :param window: window parameter
+        :param height: number of lines
+        :param width: number of columns
         """
         self.window = window
         self.height = height
@@ -267,18 +275,18 @@ class BotIdiot:
 
     def __init__(self, cells):
         """
-        TODO
-        :param cells: TODO
+        silly bot initialization
+        :param cells: list containing buttons
         """
         self.cells = cells
 
     @staticmethod
     def bot_is_playing(x, y):
         """
-        TODO
-        :param x: TODO
-        :param y: TODO
-        :return: TODO
+        Method that randomly chooses row is column
+        :param x: number of lines
+        :param y: number of columns
+        :return: the coordinates of the pawn
         """
         row = random.randint(0, x - 1)
         column = random.randint(0, y - 1)
