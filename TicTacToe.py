@@ -7,7 +7,6 @@ class Game:
     """
     TODO
     """
-    choice = int(input("1: Player vs Player :\n2: Player vs Bot : "))
 
     def __init__(self, height, width):
         """
@@ -20,14 +19,34 @@ class Game:
         self.window = tkinter.Tk()
         self.window.title(self.name)  # title of the window
         self.window.geometry("600x600")  # size of the window : 450x480
+        self.my_menu = tkinter.Menu(self.window)
+        self.window.config(menu=self.my_menu)
+        options = tkinter.Menu(self.my_menu, tearoff=False)
+        self.my_menu.add_cascade(label="Options", menu=options)
+        options.add_command(label="Player VS Player", command=self.choice_player_vs_player)
+        options.add_command(label="Player VS Bot", command=self.choice_player_vs_bot)
+        options.add_command(label="Restart Game", command=self.restart)
         self.height = height
         self.width = width
         self.grid = Grid(self.window, height, width)
+        self.choice = ""
         self.count = 0
         self.clicked = True
-        self.grid.create_cells(lambda e: self.check_button(e, Game.choice))
+        self.grid.create_cells(lambda e: self.check_button(e, self.choice))
         self.grid.display_grid()
         self.botidiot = BotIdiot(self.grid.cells)
+
+    def restart(self):
+        self.count = 0
+        self.clicked = True
+        self.grid.create_cells(lambda e: self.check_button(e, self.choice))
+        self.grid.display_grid()
+
+    def choice_player_vs_player(self):
+        self.choice = 1
+
+    def choice_player_vs_bot(self):
+        self.choice = 2
 
     def player_vs_bot(self, x, y):
         """
@@ -215,6 +234,8 @@ class Grid:
         :return:
         """
 
+        self.cells = []
+
         for x in range(self.height):
             self.cells.append([])
             for y in range(self.width):
@@ -229,8 +250,8 @@ class Grid:
         :return:
         """
 
-        for x in range(self.width):
-            for y in range(self.height):
+        for x in range(self.height):
+            for y in range(self.width):
                 self.cells[x][y].config(state=tkinter.DISABLED)
 
     def display_grid(self):
