@@ -7,6 +7,7 @@ class Game:
     """
     TODO
     """
+    choice = int(input("1: Player vs Player :\n2: Player vs Bot : "))
 
     def __init__(self, height, width):
         """
@@ -23,13 +24,12 @@ class Game:
         self.width = width
         self.grid = Grid(self.window, height, width)
         self.count = 0
-        self.winner = False  # variable that may not be used
         self.clicked = True
-        self.grid.create_cells(lambda e: self.check_button(e))
+        self.grid.create_cells(lambda e: self.check_button(e, Game.choice))
         self.grid.display_grid()
         self.botidiot = BotIdiot(self.grid.cells)
 
-    def loop(self, x, y):
+    def player_vs_bot(self, x, y):
         """
         TODO
         :param x: TODO
@@ -40,27 +40,51 @@ class Game:
         btn_bot = self.botidiot.bot_is_playing(self.height, self.width)
 
         if self.grid.cells[x][y]["text"] == "" and self.clicked is True and self.count <= 9:  # if player has clicked 1 time
-            self.button_click(x, y)
+            self.button_click_player1(x, y)
+            self.grid.cells[x][y].config(state=tkinter.DISABLED)
 
         elif self.grid.cells[btn_bot[0]][btn_bot[1]]["text"] == "" and self.clicked is False and self.count <= 9:  # the other player play
             self.button_click_bot(btn_bot[0], btn_bot[1])
+            self.grid.cells[btn_bot[0]][btn_bot[1]].config(state=tkinter.DISABLED)
 
-        else:
-            messagebox.showerror(self.name, "Already Pressed")
-
-    def check_button(self, event: tkinter.Event):
+    def player_vs_player(self, x, y):
         """
         TODO
+        :param x: TODO
+        :param y: TODO
+        :return:
+        """
+
+        if self.grid.cells[x][y]["text"] == "" and self.clicked is True and self.count <= 9:  # if player has clicked 1 time
+            self.button_click_player1(x, y)
+            self.grid.cells[x][y].config(state=tkinter.DISABLED)
+
+        elif self.grid.cells[x][y]["text"] == "" and self.clicked is False and self.count <= 9:  # the other player play
+            self.button_click_player2(x, y)
+            self.grid.cells[x][y].config(state=tkinter.DISABLED)
+
+    def check_button(self, event: tkinter.Event, choice):
+        """
+        TODO
+        :param choice: TODO
         :param event: TODO
         :return:
         """
         # print(dir(event))
-        for x in range(len(self.grid.cells)):
-            for y in range(len(self.grid.cells[x])):
-                if event.widget == self.grid.cells[x][y]:
-                    self.loop(x, y)
+        # print(event.widget)
+        if choice == 1:
+            for x in range(len(self.grid.cells)):
+                for y in range(len(self.grid.cells[x])):
+                    if event.widget == self.grid.cells[x][y] and event.widget["state"] == "normal":
+                        self.player_vs_player(x, y)
 
-    def button_click(self, x, y):
+        elif choice == 2:
+            for x in range(len(self.grid.cells)):
+                for y in range(len(self.grid.cells[x])):
+                    if event.widget == self.grid.cells[x][y] and event.widget["state"] == "normal":
+                        self.player_vs_bot(x, y)
+
+    def button_click_player1(self, x, y):
         """
         method print to the screen the character
         :param y: TODO
@@ -68,10 +92,23 @@ class Game:
         :return:
         """
 
-        self.grid.cells[x][y]["text"] = 'O'
+        self.grid.cells[x][y]["text"] = "O"
         self.clicked = False  # Change the character for the next move
         self.count += 1
         self.check_if_win("O")  # check if the player 'O' win
+
+    def button_click_player2(self, x, y):
+        """
+        method print to the screen the character
+        :param y: TODO
+        :param x: TODO
+        :return:
+        """
+
+        self.grid.cells[x][y]["text"] = "X"
+        self.clicked = True  # Change the character for the next move
+        self.count += 1
+        self.check_if_win("X")  # check if the player 'O' win
 
     def button_click_bot(self, btnx, btny):
         """
@@ -112,8 +149,7 @@ class Game:
                 self.grid.cells[1][1]["text"] == player and self.grid.cells[1][2]["text"] == player or \
                 self.grid.cells[2][0]["text"] == player and self.grid.cells[2][1]["text"] == player and \
                 self.grid.cells[2][2]["text"] == player:
-            self.winner = True
-            messagebox.showinfo(self.name, player + "Win !")
+            messagebox.showinfo(self.name, player + " Win !")
             self.grid.disable_all_buttons()
 
     def check_column(self, player):
@@ -126,7 +162,6 @@ class Game:
         if self.grid.cells[0][0]["text"] == player and self.grid.cells[1][1]["text"] == player and \
                 self.grid.cells[2][2]["text"] == player or self.grid.cells[0][2]["text"] == player and \
                 self.grid.cells[1][1]["text"] == player and self.grid.cells[2][0]["text"] == player:
-            self.winner = True
             messagebox.showinfo(self.name, player + " Win ! ")
             self.grid.disable_all_buttons()
 
@@ -142,7 +177,6 @@ class Game:
                 self.grid.cells[1][1]["text"] == player and self.grid.cells[2][1]["text"] == player or \
                 self.grid.cells[0][2]["text"] == player and self.grid.cells[1][2]["text"] == player and \
                 self.grid.cells[2][2]["text"] == player:
-            self.winner = True
             messagebox.showinfo(self.name, player + " Win !")
             self.grid.disable_all_buttons()
 
@@ -154,6 +188,7 @@ class Game:
 
         if self.count >= 9:  # if all cells are filled
             messagebox.showinfo(self.name, " Nobody Won !")  # Alert player !
+            self.grid.disable_all_buttons()
 
 
 class Grid:
@@ -194,8 +229,8 @@ class Grid:
         :return:
         """
 
-        for x in range(self.height):
-            for y in range(self.width):
+        for x in range(self.width):
+            for y in range(self.height):
                 self.cells[x][y].config(state=tkinter.DISABLED)
 
     def display_grid(self):
