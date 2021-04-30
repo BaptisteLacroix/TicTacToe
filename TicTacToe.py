@@ -2,6 +2,13 @@ import random
 import tkinter
 from tkinter import messagebox
 
+"""
+
+TODO : besoins de remettre la cellule à zero au moment du restart, il faut faire commmencer le bot en premier en hard
+TODO : Et le faire jouer sans devoir avoir à appuyer.
+
+"""
+
 
 class Game:
     """
@@ -68,6 +75,8 @@ class Game:
         :return:
         """
         self.choice = 3
+        messagebox.showinfo(self.name, "Im working on this bot. They are some bugs im sorry ! "
+                                       "\nIm doing my best to resolve them.")
 
     def player_vs_bot_idiot(self, x, y):
         """
@@ -79,14 +88,14 @@ class Game:
 
         if self.grid.cells[x][y]["text"] == "" and self.clicked is True and self.count <= 9:
             # if player has clicked 1 time
-            self.button_click_player1(x, y)
+            self.menu_player_vs_bot_idiot(x, y)
             self.grid.cells[x][y].config(state=tkinter.DISABLED)
 
         btn_bot = self.botidiot.bot_idiot_is_playing(self.height, self.width)
 
         if self.grid.cells[btn_bot[0]][btn_bot[1]]["text"] == "" and self.clicked is False and self.count <= 9:
             # the other player play
-            self.button_click_bot(btn_bot[0], btn_bot[1])
+            self.menu_player_vs_bot_idiot(x, y, btn_bot[0], btn_bot[1])
             self.grid.cells[btn_bot[0]][btn_bot[1]].config(state=tkinter.DISABLED)
 
     def player_vs_bot_hard(self, x, y):
@@ -97,17 +106,18 @@ class Game:
         :return:
         """
 
-        if self.grid.cells[x][y]["text"] == "" and self.clicked is True and self.count <= 9:
-            # if player has clicked 1 time
-            self.button_click_player1(x, y)
-            self.grid.cells[x][y].config(state=tkinter.DISABLED)
-
         btn_bot = self.botidiot.bot_hard_is_playing(self.height, self.width)
+        print(self.grid.cells)
 
         if self.grid.cells[btn_bot[0]][btn_bot[1]]["text"] == "" and self.clicked is False and self.count <= 9:
             # the other player play
-            self.button_click_bot(btn_bot[0], btn_bot[1])
+            self.menu_player_vs_bot_hard(x, y, btn_bot[0], btn_bot[1])
             self.grid.cells[btn_bot[0]][btn_bot[1]].config(state=tkinter.DISABLED)
+
+        if self.grid.cells[x][y]["text"] == "" and self.clicked is True and self.count <= 9:
+            # if player has clicked 1 time
+            self.menu_player_vs_bot_hard(x, y, btn_bot[0], btn_bot[1])
+            self.grid.cells[x][y].config(state=tkinter.DISABLED)
 
     def player_vs_player(self, x, y):
         """
@@ -119,23 +129,24 @@ class Game:
 
         if self.grid.cells[x][y]["text"] == "" and self.clicked is True and self.count <= 9:
             # if player has clicked 1 time
-            self.button_click_player1(x, y)
+            self.menu_player_vs_player(x, y)
             self.grid.cells[x][y].config(state=tkinter.DISABLED)
 
         elif self.grid.cells[x][y]["text"] == "" and self.clicked is False and self.count <= 9:
             # the other player play
-            self.button_click_player2(x, y)
+            self.menu_player_vs_player(x, y)
             self.grid.cells[x][y].config(state=tkinter.DISABLED)
 
     def check_button(self, event: tkinter.Event, choice):
         """
         Method which makes it possible to check that the pressed button is the correct one and that the button is
         well pressable
+        # print(dir(event))
         :param choice: parameter that lets you know if you throw against a player or against a bot
         :param event: parameter which takes in parameter the pressed button
         :return:
         """
-        # print(dir(event))
+
         # print(event.widget)
         if choice == 1:
             self.choice1(event)
@@ -162,7 +173,7 @@ class Game:
                 if event.widget == self.grid.cells[x][y] and event.widget["state"] == "normal":
                     self.player_vs_bot_hard(x, y)
 
-    def button_click_player1(self, x, y):
+    def menu_player_vs_player(self, x, y):
         """
         method print to the screen the character
         :param y: column number
@@ -170,36 +181,61 @@ class Game:
         :return:
         """
 
-        self.grid.cells[x][y]["text"] = "O"
-        self.clicked = False  # Change the character for the next move
-        self.count += 1
-        self.check_if_win("O")  # check if the player 'O' win
+        if self.clicked is True:
+            self.grid.cells[x][y]["text"] = "O"
+            self.clicked = False  # Change the character for the next move
+            self.count += 1
+            self.check_if_win("O")  # check if the player 'O' win
 
-    def button_click_player2(self, x, y):
+        elif self.clicked is False:
+            self.grid.cells[x][y]["text"] = "X"
+            self.clicked = True  # Change the character for the next move
+            self.count += 1
+            self.check_if_win("X")  # check if the player 'O' win
+
+    def menu_player_vs_bot_idiot(self, x, y, btnx=None, btny=None):
         """
         method print to the screen the character
-        :param y: column number
         :param x: line number
+        :param y: column number
+        :param btnx: line number
+        :param btny: column number
         :return:
         """
 
-        self.grid.cells[x][y]["text"] = "X"
-        self.clicked = True  # Change the character for the next move
-        self.count += 1
-        self.check_if_win("X")  # check if the player 'O' win
+        if self.clicked is True:
+            self.grid.cells[x][y]["text"] = "O"
+            self.clicked = False  # Change the character for the next move
+            self.count += 1
+            self.check_if_win("O")  # check if the player 'O' win
 
-    def button_click_bot(self, btnx, btny):
+        elif self.clicked is False:
+            self.grid.cells[btnx][btny]["text"] = 'X'
+            self.clicked = True  # Change the character for the next move
+            self.count += 1
+            self.check_if_win("X")  # check if the player 'X' win
+
+    def menu_player_vs_bot_hard(self, x, y, btnx, btny):
         """
         method print to the screen the character
-        :param btny: line number
-        :param btnx: column number
+        :param x: line number
+        :param y: column number
+        :param btnx: line number
+        :param btny: column number
         :return:
         """
 
-        self.grid.cells[btnx][btny]["text"] = 'X'
-        self.clicked = True  # Change the character for the next move
-        self.count += 1
-        self.check_if_win("X")  # check if the player 'X' win
+        if self.clicked is True:
+            self.grid.cells[x][y]["text"] = "O"
+            self.clicked = False  # Change the character for the next move
+            self.count += 1
+            self.check_if_win("O")  # check if the player 'O' win
+
+        elif self.clicked is False:
+            self.grid.cells[btnx][btny]["text"] = 'X'
+            self.clicked = True  # Change the character for the next move
+            self.count += 1
+            self.check_if_win("X")  # check if the player 'X' win
 
     def check_if_win(self, player):
         """
@@ -350,8 +386,11 @@ class Bot:
         """
 
         row = self.check_row()
+        print("row : ", row)
         column = self.check_column()
+        print("column : ", column)
         diagonal = self.check_diagonals()
+        print("diagonal : ", diagonal, "\n")
 
         if row is None and column is None and diagonal is None:
             row = random.randint(0, x - 1)
@@ -372,9 +411,13 @@ class Bot:
         method which checks for each row if the player wins
         :return: TODO
         """
+
         row0 = self.row0()
+        print("row0 : ", row0)
         row1 = self.row1()
+        print("row1 : ", row1)
         row2 = self.row2()
+        print("row2 : ", row2)
         if row0 is True:
             return row0[1]
         elif row1 is True:
@@ -384,43 +427,52 @@ class Bot:
         else:
             return None
 
-    def row0(self, player="X"):
+    def row0(self):
         """
         TODO
-        :param player: Current player's pawn
         :return: TODO
         """
-        if self.cells[0][0]["text"] == player and self.cells[0][1]["text"] == player:
+
+        if self.cells[0][0]["text"] == "X" and self.cells[0][1]["text"] == "X" or self.cells[0][0]["text"] == "O" and \
+                self.cells[0][1]["text"] == "O":
             return True, [0, 2]
-        elif self.cells[0][0]["text"] == player and self.cells[0][2]["text"] == player:
+        elif self.cells[0][0]["text"] == "X" and self.cells[0][2]["text"] == "X" or self.cells[0][0]["text"] == "O" and \
+                self.cells[0][2]["text"] == "O":
             return True, [0, 1]
-        elif self.cells[0][1]["text"] == player and self.cells[0][2]["text"] == player:
+        elif self.cells[0][1]["text"] == "X" and self.cells[0][2]["text"] == "X" or self.cells[0][1]["text"] == "O" and \
+                self.cells[0][2]["text"] == "O":
             return True, [0, 0]
 
-    def row1(self, player="X"):
+    def row1(self):
         """
         TODO
-        :param player: Current player's pawn
         :return: TODO
         """
-        if self.cells[1][0]["text"] == player and self.cells[1][1]["text"] == player:
+
+        if self.cells[1][0]["text"] == "X" and self.cells[1][1]["text"] == "X" or self.cells[1][0]["text"] == "O" and \
+                self.cells[1][1]["text"] == "O":
             return True, [1, 2]
-        elif self.cells[1][0]["text"] == player and self.cells[1][2]["text"] == player:
+        elif self.cells[1][0]["text"] == "X" and self.cells[1][2]["text"] == "X" or self.cells[1][0]["text"] == "O" and \
+                self.cells[1][2]["text"] == "O":
             return True, [1, 1]
-        elif self.cells[1][1]["text"] == player and self.cells[1][2]["text"] == player:
+        elif self.cells[1][1]["text"] == "X" and self.cells[1][2]["text"] == "X" or self.cells[1][1]["text"] == "O" and \
+                self.cells[1][2]["text"] == "O":
             return True, [1, 0]
 
-    def row2(self, player="X"):
+    def row2(self):
         """
         TODO
-        :param player: Current player's pawn
         :return: TODO
         """
-        if self.cells[2][0]["text"] == player and self.cells[2][1]["text"] == player:
+
+        if self.cells[2][0]["text"] == "X" and self.cells[2][1]["text"] == "X" or self.cells[2][0]["text"] == "O" and \
+                self.cells[2][1]["text"] == "O":
             return True, [2, 2]
-        elif self.cells[2][0]["text"] == player and self.cells[2][2]["text"] == player:
+        elif self.cells[2][0]["text"] == "X" and self.cells[2][2]["text"] == "X" or self.cells[2][0]["text"] == "O" and \
+                self.cells[2][2]["text"] == "O":
             return True, [2, 1]
-        elif self.cells[2][1]["text"] == player and self.cells[2][2]["text"] == player:
+        elif self.cells[2][1]["text"] == "X" and self.cells[2][2]["text"] == "X" or self.cells[2][1]["text"] == "O" and \
+                self.cells[2][2]["text"] == "O":
             return True, [2, 0]
 
     def check_column(self):
@@ -430,8 +482,11 @@ class Bot:
         """
 
         column0 = self.column0()
+        print("column0 : ", column0)
         column1 = self.column1()
+        print("column1 : ", column1)
         column2 = self.column2()
+        print("column2 : ", column2)
         if column0 is True:
             return column0[1]
         elif column1 is True:
@@ -441,46 +496,52 @@ class Bot:
         else:
             return None
 
-    def column0(self, player="X"):
+    def column0(self):
         """
         TODO
-        :param player: Current player's pawn
         :return: TODO
         """
 
-        if self.cells[0][0]["text"] == player and self.cells[1][0]["text"] == player:
+        if self.cells[0][0]["text"] == "X" and self.cells[1][0]["text"] == "X" or self.cells[0][0]["text"] == "O" and \
+                self.cells[1][0]["text"] == "O":
             return True, [2, 0]
-        elif self.cells[0][0]["text"] == player and self.cells[2][0]["text"] == player:
+        elif self.cells[0][0]["text"] == "X" and self.cells[2][0]["text"] == "X" or self.cells[0][0]["text"] == "O" and \
+                self.cells[2][0]["text"] == "O":
             return True, [1, 0]
-        elif self.cells[1][0]["text"] == player and self.cells[2][0]["text"] == player:
+        elif self.cells[1][0]["text"] == "X" and self.cells[2][0]["text"] == "X" or self.cells[1][0]["text"] == "O" and \
+                self.cells[2][0]["text"] == "O":
             return True, [0, 0]
 
-    def column1(self, player="X"):
+    def column1(self):
         """
         TODO
-        :param player: Current player's pawn
         :return: TODO
         """
 
-        if self.cells[0][1]["text"] == player and self.cells[1][1]["text"] == player:
+        if self.cells[0][1]["text"] == "X" and self.cells[1][1]["text"] == "X" or self.cells[0][1]["text"] == "O" and \
+                self.cells[1][1]["text"] == "O":
             return True, [2, 1]
-        elif self.cells[0][1]["text"] == player and self.cells[2][1]["text"] == player:
+        elif self.cells[0][1]["text"] == "X" and self.cells[2][1]["text"] == "X" or self.cells[0][1]["text"] == "O" and \
+                self.cells[2][1]["text"] == "O":
             return True, [1, 1]
-        elif self.cells[1][1]["text"] == player and self.cells[2][1]["text"] == player:
+        elif self.cells[1][1]["text"] == "X" and self.cells[2][1]["text"] == "X" or self.cells[1][1]["text"] == "O" and \
+                self.cells[2][1]["text"] == "O":
             return True, [0, 1]
 
-    def column2(self, player="X"):
+    def column2(self):
         """
         TODO
-        :param player: Current player's pawn
         :return: TODO
         """
 
-        if self.cells[0][2]["text"] == player and self.cells[1][2]["text"] == player:
+        if self.cells[0][2]["text"] == "X" and self.cells[1][2]["text"] == "X" or self.cells[0][2]["text"] == "O" and \
+                self.cells[1][2]["text"] == "O":
             return True, [2, 2]
-        elif self.cells[0][2]["text"] == player and self.cells[2][2]["text"] == player:
+        elif self.cells[0][2]["text"] == "X" and self.cells[2][2]["text"] == "X" or self.cells[0][2]["text"] == "O" and \
+                self.cells[2][2]["text"] == "O":
             return True, [1, 2]
-        elif self.cells[1][2]["text"] == player and self.cells[2][2]["text"] == player:
+        elif self.cells[1][2]["text"] == "X" and self.cells[2][2]["text"] == "X" or self.cells[1][2]["text"] == "O" and \
+                self.cells[2][2]["text"] == "O":
             return True, [2, 0]
 
     def check_diagonals(self):
@@ -490,7 +551,9 @@ class Bot:
         """
 
         diagonal0 = self.diagonal0()
+        print("diagonal0 : ", diagonal0)
         diagonal1 = self.diagonal1()
+        print("diagonal1 : ", diagonal1)
         if diagonal0 is True:
             return diagonal0[1]
         elif diagonal1 is True:
@@ -498,31 +561,36 @@ class Bot:
         else:
             return None
 
-    def diagonal0(self, player="X"):
+    def diagonal0(self):
         """
         TODO
-        :param player: Current player's pawn
         :return: TODO
         """
 
-        if self.cells[0][2]["text"] == player and self.cells[1][1]["text"] == player:
+        if self.cells[0][2]["text"] == "X" and self.cells[1][1]["text"] == "X" or self.cells[0][2]["text"] == "O" and \
+                self.cells[1][1]["text"] == "O":
             return True, [2, 0]
-        elif self.cells[0][2]["text"] == player and self.cells[2][0]["text"] == player:
+        elif self.cells[0][2]["text"] == "X" and self.cells[2][0]["text"] == "X" or self.cells[0][2]["text"] == "O" and \
+                self.cells[2][0]["text"] == "O":
             return True, [1, 1]
-        elif self.cells[1][1]["text"] == player and self.cells[2][0]["text"] == player:
+        elif self.cells[1][1]["text"] == "X" and self.cells[2][0]["text"] == "X" or self.cells[1][1]["text"] == "O" and \
+                self.cells[2][0]["text"] == "O":
             return True, [0, 2]
 
-    def diagonal1(self, player="X"):
+    def diagonal1(self):
         """
         TODO
-        :param player: Current player's pawn
         :return: TODO
         """
-        if self.cells[0][0]["text"] == player and self.cells[1][1]["text"] == player:
+
+        if self.cells[0][0]["text"] == "X" and self.cells[1][1]["text"] == "X" or self.cells[0][0]["text"] == "O" and \
+                self.cells[1][1]["text"] == "O":
             return True, [2, 2]
-        elif self.cells[0][0]["text"] == player and self.cells[2][2]["text"] == player:
+        elif self.cells[0][0]["text"] == "X" and self.cells[2][2]["text"] == "X" or self.cells[0][0]["text"] == "O" and \
+                self.cells[2][2]["text"] == "O":
             return True, [1, 1]
-        elif self.cells[1][1]["text"] == player and self.cells[2][2]["text"] == player:
+        elif self.cells[1][1]["text"] == "X" and self.cells[2][2]["text"] == "X" or self.cells[1][1]["text"] == "O" and \
+                self.cells[2][2]["text"] == "O":
             return True, [0, 0]
 
 
