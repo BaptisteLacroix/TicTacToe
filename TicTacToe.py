@@ -32,6 +32,7 @@ class Game:
         self.grid = Grid(self.window, height, width)
         self.choice = ""
         self.count = 0
+        self.winner = False
         self.clicked = True
         self.grid.create_cells(lambda e: self.check_button(e, self.choice))
         self.grid.display_grid()
@@ -225,6 +226,7 @@ class Game:
                 self.grid.cells[2][0]["text"] == player and self.grid.cells[2][1]["text"] == player and \
                 self.grid.cells[2][2]["text"] == player:
             messagebox.showinfo(self.name, player + " Win !")
+            self.winner = True
             self.grid.disable_all_buttons()
 
     def check_diagonals(self, player):
@@ -238,6 +240,7 @@ class Game:
                 self.grid.cells[2][2]["text"] == player or self.grid.cells[0][2]["text"] == player and \
                 self.grid.cells[1][1]["text"] == player and self.grid.cells[2][0]["text"] == player:
             messagebox.showinfo(self.name, player + " Win ! ")
+            self.winner = True
             self.grid.disable_all_buttons()
 
     def check_column(self, player):
@@ -253,6 +256,7 @@ class Game:
                 self.grid.cells[0][2]["text"] == player and self.grid.cells[1][2]["text"] == player and \
                 self.grid.cells[2][2]["text"] == player:
             messagebox.showinfo(self.name, player + " Win !")
+            self.winner = True
             self.grid.disable_all_buttons()
 
     def check_draw(self):
@@ -261,7 +265,7 @@ class Game:
         :return:
         """
 
-        if self.count >= 9:  # if all cells are filled
+        if self.count == 9 and self.winner is False:  # if all cells are filled
             messagebox.showinfo(self.name, " Nobody Won !")  # Alert player !
             self.grid.disable_all_buttons()
 
